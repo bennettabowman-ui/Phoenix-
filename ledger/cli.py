@@ -14,8 +14,10 @@ import argparse
 import csv
 import sys
 from datetime import date
+from pathlib import Path
 
 from . import store
+from . import import_csv as imp
 
 
 def _resolve_month(arg: str) -> tuple[int, int]:
@@ -95,6 +97,43 @@ def cmd_export(args) -> int:
     return 0
 
 
+def cmd_import(args) -> int:
+    path = Path(args.path)
+    if not path.exists():
+        print(f"File not found: {path}", file=sys.stderr)
+        return 2
+    if args.bank == "generic":
+        missing = [n for n in ("date_col", "desc_col", "amount_col", "sign")
+                   if getattr(args, n) is None]
+        if missing:
+            print(f"--bank generic requires: {', '.join('--' + m.replace('_','-') for m in missing)}",
+                  file=sys.stderr)
+            return 2
+        profile = imp.make_generic_profile(
+            date_col=args.date_col,
+            desc_col=args.desc_col,
+            amount_col=args.amount_col,
+            sign=args.sign,
+        )
+    else:
+        profile = imp.PROFILES[args.bank]
+    result = imp.import_csv(
+        path, profile, account=args.account, default_pillar=args.pillar
+    )
+    print(f"Imported from {args.bank}:{args.account}")
+    print(f"  inserted:   {result.inserted}")
+    print(f"  duplicates: {result.duplicates}")
+    print(f"  skipped:    {result.skipped}")
+    if result.errors:
+        print("  errors:")
+        for e in result.errors[:10]:
+            print(f"    - {e}")
+        if len(result.errors) > 10:
+            print(f"    ... and {len(result.errors) - 10} more")
+        return 1
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="ledger", description="Phoenix ledger CLI")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -124,6 +163,20 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("export", help="Export all transactions to CSV")
     sp.add_argument("--csv", default="data/ledger_export.csv")
     sp.set_defaults(func=cmd_export)
+
+    sp = sub.add_parser("import", help="Import a bank/card CSV statement")
+    sp.add_argument("path", help="Path to CSV file")
+    sp.add_argument("--bank", choices=["chase", "amex", "generic"], default="chase")
+    sp.add_argument("--account", required=True,
+                    help="A short label for this account, e.g. 'checking', 'amex-plat'")
+    sp.add_argument("--pillar", choices=list("ABCDEFG"),
+                    help="Default pillar for income rows")
+    # Generic-only flags:
+    sp.add_argument("--date-col")
+    sp.add_argument("--desc-col")
+    sp.add_argument("--amount-col")
+    sp.add_argument("--sign", choices=["expense-negative", "expense-positive"])
+    sp.set_defaults(func=cmd_import)
 
     return p
 

@@ -11,17 +11,20 @@ from phoenix_core.paths import LEDGER_DB, ensure_dirs
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS transactions (
-    id        INTEGER PRIMARY KEY AUTOINCREMENT,
-    ts        TEXT    NOT NULL,            -- ISO date YYYY-MM-DD
-    kind      TEXT    NOT NULL CHECK (kind IN ('income','expense')),
-    amount    REAL    NOT NULL CHECK (amount >= 0),
-    category  TEXT    NOT NULL,
-    source    TEXT,                        -- e.g. 'gumroad sale', 'rent'
-    pillar    TEXT,                        -- A..G or NULL
-    note      TEXT
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts          TEXT    NOT NULL,            -- ISO date YYYY-MM-DD
+    kind        TEXT    NOT NULL CHECK (kind IN ('income','expense')),
+    amount      REAL    NOT NULL CHECK (amount >= 0),
+    category    TEXT    NOT NULL,
+    source      TEXT,                        -- e.g. 'gumroad sale', 'rent'
+    pillar      TEXT,                        -- A..G or NULL
+    note        TEXT,
+    external_id TEXT                         -- dedupe key for imports
 );
 CREATE INDEX IF NOT EXISTS ix_tx_ts        ON transactions(ts);
 CREATE INDEX IF NOT EXISTS ix_tx_category  ON transactions(category);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_tx_external
+    ON transactions(external_id) WHERE external_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS targets (
     key   TEXT PRIMARY KEY,
@@ -45,6 +48,14 @@ def connect(path: Path | None = None) -> Iterator[sqlite3.Connection]:
 def init_db(path: Path | None = None) -> None:
     with connect(path) as c:
         c.executescript(SCHEMA)
+        # Migrate older DBs that predate external_id.
+        cols = {r["name"] for r in c.execute("PRAGMA table_info(transactions)")}
+        if "external_id" not in cols:
+            c.execute("ALTER TABLE transactions ADD COLUMN external_id TEXT")
+            c.execute(
+                "CREATE UNIQUE INDEX IF NOT EXISTS uq_tx_external "
+                "ON transactions(external_id) WHERE external_id IS NOT NULL"
+            )
 
 
 def add_tx(
@@ -56,19 +67,33 @@ def add_tx(
     pillar: str | None = None,
     note: str | None = None,
     ts: str | None = None,
-) -> int:
+    external_id: str | None = None,
+    conn: sqlite3.Connection | None = None,
+) -> int | None:
+    """Insert a transaction. Returns row id, or None if dedupe-skipped."""
     if kind not in ("income", "expense"):
         raise ValueError("kind must be 'income' or 'expense'")
     if amount < 0:
         raise ValueError("amount must be >= 0")
     ts = ts or date.today().isoformat()
+
+    def _do(c: sqlite3.Connection) -> int | None:
+        try:
+            cur = c.execute(
+                "INSERT INTO transactions (ts, kind, amount, category, source, "
+                "pillar, note, external_id) VALUES (?,?,?,?,?,?,?,?)",
+                (ts, kind, amount, category, source, pillar, note, external_id),
+            )
+            return int(cur.lastrowid)
+        except sqlite3.IntegrityError as e:
+            if "uq_tx_external" in str(e) or "UNIQUE" in str(e).upper():
+                return None
+            raise
+
+    if conn is not None:
+        return _do(conn)
     with connect() as c:
-        cur = c.execute(
-            "INSERT INTO transactions (ts, kind, amount, category, source, "
-            "pillar, note) VALUES (?,?,?,?,?,?,?)",
-            (ts, kind, amount, category, source, pillar, note),
-        )
-        return int(cur.lastrowid)
+        return _do(c)
 
 
 def set_target(key: str, value: float) -> None:

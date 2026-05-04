@@ -1,144 +1,190 @@
 # Phoenix — 90-Day Launch Sequence
 
-Realistic, executable, no hype. Revenue numbers are **conservative**, not
-goals — beating them is fine; the plan stands either way. Hours are estimates
-of *Orchestrator time*; Claude/Phoenix work is unmetered.
+A phased, pillar-by-pillar plan. Realistic, executable, no hype.
 
-The plan has three phases: **Foundation (days 1–30), First Revenue
-(31–60), Compounding (61–90)**.
+- **Phoenix's role** = what Claude + the scripts in this repo do.
+- **Orchestrator's role** = what only the human can do (judgment, voice,
+  client calls, money movement, signing things).
+- **Revenue ranges are conservative.** They assume some warm network and
+  domain credibility. Cold-start with neither pushes timelines out 30–60
+  days. Cut ranges in half on a first-time-founder cold start.
 
----
-
-## Phase 1 — Foundation (days 1–30)
-
-**Goal:** infrastructure works, one product is shipping, one channel is alive.
-
-### Week 1 — Wire the toolkit
-- [ ] Run `ledger init`, log last 30 days of expenses honestly. *Phoenix helps
-      categorize.* (1 hr)
-- [ ] First portfolio snapshot. Honest numbers. (30 min)
-- [ ] Pick one digital product idea (Pillar A) the Orchestrator could defend
-      with their real expertise. Write 1-paragraph thesis. (1 hr)
-- [ ] Pick one channel for Pillar B (newsletter OR X OR YouTube). One. (15 min)
-- [ ] Set monthly burn target & 6-month emergency-fund target in `data/`. (15 min)
-
-**Revenue this week:** $0. **Outputs:** ledger populated, target set.
-
-### Week 2 — Build `phoenix_core/`
-- [ ] Implement `phoenix_core/llm.py` (Anthropic wrapper + cost log). *Claude
-      writes; Orchestrator reviews.*
-- [ ] Add prompt caching to content + research pipelines.
-- [ ] Pick name + outline for the digital product. (2 hrs)
-
-**Revenue this week:** $0.
-
-### Week 3 — Draft the product
-- [ ] Phoenix drafts every section of the product. Orchestrator edits for voice
-      (4 hrs).
-- [ ] Phoenix drafts sales-page copy + 5 thread variants for launch.
-- [ ] Set up Gumroad / Lemon Squeezy account. (30 min)
-
-**Revenue this week:** $0.
-
-### Week 4 — Soft launch
-- [ ] Ship the product (price $29–$49). Soft launch to personal network only.
-- [ ] First newsletter post / first X thread (Pillar B). One per week minimum
-      from here on.
-- [ ] Run `ledger report` + first monthly Wealth Pulse (under 400 words).
-
-**Revenue target (conservative):** **$50–$300** from 2–8 friend-of-friend
-sales. This is validation, not income.
+The plan runs 6 pillars in **parallel but staggered** — none of them require
+heroic effort, all of them compound. Hours below are *Orchestrator time*;
+Phoenix work is unmetered.
 
 ---
 
-## Phase 2 — First real revenue (days 31–60)
+## Phase 1 — Foundation (Days 1–30)
 
-**Goal:** one paid client OR public product launch with traction.
+**Aim:** infra works; one product drafting; one channel alive; service offer
+defined; investment policy written; one offline backup documented.
 
-### Week 5
-- [ ] Public launch of the product on relevant communities (HN, Reddit niches,
-      Indie Hackers, Product Hunt — pick 2). *Phoenix drafts launch posts.*
-- [ ] Define the **single productized service** for Pillar C (e.g., "Custom
-      Claude agent — $1,500 fixed scope"). One-page offer.
-- [ ] Reach out to 10 warm contacts about the service. (2 hrs)
+### Pillar A — Signature Digital Products
+- **First project:** ship one $29–$49 digital product that the Orchestrator
+  can defend with real expertise (e.g., "AI Resilience Toolkit", "Solo
+  Operator's Agent Playbook", or a prompt-pack themed on future-proof
+  living).
+- **Phoenix role:** draft outline, every section, sales-page copy, 5 launch
+  thread variants, refund policy, FAQ. Track sales in ledger under pillar A.
+- **Orchestrator role:** pick the topic, edit for voice (~4 hrs), set up
+  Gumroad/Lemon Squeezy account, click publish.
+- **Key assets:** product PDF/Notion (~30 pages), sales page, 5 launch
+  threads, 1 launch newsletter, refund policy.
+- **Conservative revenue:** Month 1: **$50–$300** (warm network soft launch).
 
-**Revenue:** $100–$600 product sales. 0–1 service leads.
+### Pillar B — Audience Flywheel
+- **First project:** pick **one** primary channel (newsletter on Beehiiv OR X
+  OR YouTube). 2 posts/week, no skipping.
+- **Phoenix role:** draft every post and newsletter from research briefs;
+  maintain an idea backlog in `data/artifacts/`; track subscriber counts
+  weekly in the ledger as a non-revenue metric.
+- **Orchestrator role:** edit for voice (~30 min/post), hit publish.
+- **Key assets:** content calendar, 8 drafted posts, 4 newsletter issues by
+  day 30.
+- **Conservative revenue:** $0 (audience build phase). Target **50+ subs**
+  by day 30.
 
-### Week 6
-- [ ] Iterate product based on feedback (Phoenix drafts changelog + email to
-      buyers).
-- [ ] Pillar D: pick one tiny tool to ship. Phoenix scaffolds MVP this week.
-- [ ] First **service proposal** sent if a lead replied.
+### Pillar C — AI Service Agency
+- **First project:** define **one productized service**, fixed price, fixed
+  scope. E.g., "Custom Claude agent for your business — $1,500, delivered
+  in 14 days."
+- **Phoenix role:** draft the offer page, scoping doc, FAQ, proposal
+  template, and a sample agent that demonstrates capability.
+- **Orchestrator role:** identify 10 warm contacts who might need it; reach
+  out personally (~2 hrs).
+- **Key assets:** one-page offer, proposal template, demo agent.
+- **Conservative revenue:** Month 1: $0 (pipeline building).
 
-**Revenue:** $50–$300 product. Pipeline forming.
+### Pillar D — Micro-SaaS / Tools
+- **First project:** scope *one* tiny tool the Orchestrator personally
+  needs — Claude codes the MVP. Hosted cheap (Cloudflare Workers / Fly).
+- **Phoenix role:** scaffold the codebase, write the landing page, set up a
+  $0 waitlist or $9/mo paywall.
+- **Orchestrator role:** name it, pick the price, decide what stays out of
+  v1.
+- **Key assets:** working MVP, landing page, waitlist.
+- **Conservative revenue:** $0 (validation phase).
 
-### Week 7
-- [ ] Land first service client OR pivot the offer. Decide based on signal,
-      not feelings.
-- [ ] Ship Pillar D MVP behind a $0 waitlist or $9/mo paywall.
-- [ ] Newsletter / X subscriber count check: should be ≥50.
+### Pillar E — Smart Capital Allocation
+- **First project:** write a 1-page **Investment Policy Statement (IPS)**
+  *before* deploying $1. Build/maintain a 3-month emergency fund first.
+- **Phoenix role:** draft IPS template, monthly portfolio snapshot reminder,
+  rebalance math.
+- **Orchestrator role:** review IPS, sign it, contribute to emergency fund.
+- **Key assets:** IPS doc, portfolio tracker populated, emergency-fund
+  target set in ledger.
+- **Conservative revenue:** $0 (defensive phase). **Goal: do not lose money.**
 
-**Revenue:** $0–$1,500 (if first service client closes).
+### Pillar F — IP & Licensing
+- **First project:** publish **one free framework or essay** that
+  demonstrates real thinking on resilience/AI/agency. No monetization yet.
+- **Phoenix role:** outline + draft + distribute via Pillar B channel.
+- **Orchestrator role:** approve the framing; ensure it's defensible.
+- **Key assets:** one canonical essay/framework hosted on the Orchestrator's
+  domain.
+- **Conservative revenue:** $0.
 
-### Week 8
-- [ ] Deliver first service contract (Phoenix does heavy lifting; Orchestrator
-      QA's and presents).
-- [ ] Pillar E: write the **Investment Policy Statement** (1 page) before any
-      capital is moved. No deployment yet.
-- [ ] Monthly Wealth Pulse #2.
+### Pillar G — Offline Backup
+- **First project:** write a 1-page playbook for a local skill-based service
+  the Orchestrator could deliver in a week without internet.
+- **Phoenix role:** draft the playbook, list 20 local prospects/contacts.
+- **Orchestrator role:** sanity-check the offering.
+- **Key assets:** offline playbook in `docs/offline_backup.md`.
+- **Conservative revenue:** $0 (insurance, not income).
 
-**Phase-2 cumulative revenue (conservative):** **$200–$2,500**.
+**Phase 1 cumulative revenue (conservative): $50–$300.**
 
 ---
 
-## Phase 3 — Compounding (days 61–90)
+## Phase 2 — First Real Revenue (Days 31–60)
 
-**Goal:** ≥3 pillars producing *something*; rung 2 promotion for ledger and
-content.
+**Aim:** product publicly launched; first service client closed or pivoted;
+micro-SaaS shipped; audience cadence locked in.
 
-### Week 9
-- [ ] Promote `ledger` and `content` to rung 2: schedule weekly drafts +
-      monthly report (cron or GitHub Actions).
-- [ ] Second product idea drafted in parallel (Phoenix outlines).
-- [ ] Pillar B: switch on a second distribution channel.
+### Pillar A
+- Public launch on 2 communities (HN / IH / a relevant subreddit / Product
+  Hunt). Phoenix drafts launch posts. Iterate based on feedback.
+- **Conservative revenue:** **$200–$800** in month 2.
 
-### Week 10
-- [ ] Land second service client OR raise the price 25% on the existing offer.
-- [ ] Pillar D: real users on the micro-SaaS. Goal: 5 paying.
-- [ ] Begin DCA into the IPS-defined portfolio (Pillar E) once 3 months of
-      expenses are in cash reserves.
+### Pillar B
+- Subscriber goal: **150+** by day 60. Add a free lead magnet (a 1-page
+  excerpt from the Pillar A product) to grow list.
+- **Revenue:** $0 (still building).
 
-### Week 11
-- [ ] Second product ships.
-- [ ] Pillar F: publish one free framework / essay that demonstrates real
-      thinking. Distribution = same channels as Pillar B.
-- [ ] Refresh `ARCHITECTURE.md` with what we learned. Constitution amends here
-      if reality demands.
+### Pillar C
+- Send proposals to 3–5 warm leads. Close **1 client** OR pivot the offer
+  based on feedback after 10 sent proposals.
+- **Conservative revenue:** **$0–$1,500** depending on conversion.
 
-### Week 12
-- [ ] Quarterly review: which pillar produced per hour spent? Double down on
-      top 2, sunset bottom 1.
-- [ ] Plan days 91–180 with the same honesty.
-- [ ] Monthly Wealth Pulse #3.
+### Pillar D
+- Ship MVP publicly. Aim for first 3 paying users by day 60.
+- **Conservative revenue:** **$0–$30 MRR**.
 
-**Phase-3 cumulative revenue (conservative):** **$1,500–$7,000** total over
-90 days, with monthly run-rate at day 90 of **$500–$3,000/mo** depending on
-service-client conversion.
+### Pillar E
+- IPS executed: monthly DCA into 3-fund portfolio begins **only if** ≥3
+  months emergency fund is in place.
+- **Revenue:** none.
+
+### Pillar F
+- Track inbound interest from Pillar F essay. Compile into a "lead doc."
+- **Revenue:** none.
+
+### Pillar G
+- Document one offline workshop concept end-to-end. Don't run it.
+
+**Phase 2 cumulative revenue (conservative): $200–$2,330.**
 
 ---
 
-## Honest disclaimers
+## Phase 3 — Compounding (Days 61–90)
 
-- These ranges assume the Orchestrator already has *some* warm network and
-  domain credibility. Cold-start with neither pushes timelines out 30–60 days.
-- "Conservative" means **what is reasonable to expect if you execute the plan
-  and nothing goes wrong**. Plenty goes wrong. Cut estimates by half on a
-  first-time-founder cold start.
-- No revenue numbers in this document are guaranteed. They are projections
-  used to set expectations and to check whether reality is exceeding or
-  missing the model.
-- Phoenix tracks **actuals** in `data/phoenix.db` so the next iteration of
-  this plan is calibrated, not vibes-based.
+**Aim:** ≥3 pillars producing *something*; scheduled automation kicks in;
+quarterly review informs days 91–180.
+
+### Pillar A
+- Second product **drafted** in parallel (don't ship yet — let it bake).
+- Promote pillar A's content pipeline to **rung 2** (scheduled drafts).
+- **Conservative revenue:** **$300–$1,200** in month 3.
+
+### Pillar B
+- 2nd channel switched on (e.g., YouTube short-form clips of newsletter
+  content). Subscriber goal: **300+**.
+- **Revenue:** $0–$200 (first sponsorship is unlikely until 1k+).
+
+### Pillar C
+- Land **second client** OR raise the price 25% on the existing offer based
+  on demand signal.
+- **Conservative revenue:** **$0–$3,000**.
+
+### Pillar D
+- 5 paying users × $9 = **$45 MRR** target. Validation, not income.
+- **Conservative revenue:** **$30–$90 MRR**.
+
+### Pillar E
+- First quarterly rebalance per IPS rules.
+- **Revenue:** none.
+
+### Pillar F
+- Quarterly review of inbound interest; if any qualified leads, draft
+  licensing terms.
+
+### Pillar G
+- Refresh playbook. Still don't run it unless digital pillars wobble.
+
+**Phase 3 cumulative revenue (conservative): $375–$4,490.**
+
+---
+
+## Cumulative 90-day picture
+
+| | Conservative low | Conservative high |
+|---|---|---|
+| Total revenue, days 1–90 | **$625** | **~$7,120** |
+| Run-rate at day 90 | $400/mo | $3,200/mo |
+
+These are modeling numbers, not promises. Phoenix tracks **actuals** in the
+ledger so the day-91 plan is calibrated, not vibes-based.
 
 ## What success at day 90 looks like
 
@@ -146,8 +192,6 @@ service-client conversion.
 - ≥1 product live with paying customers.
 - ≥1 active distribution channel with weekly cadence.
 - ≥1 service offer with at least one closed deal or 3 qualified leads.
-- Investment policy written; emergency fund growing.
+- IPS written; emergency fund growing.
+- Offline-backup playbook on the shelf.
 - A clear, evidence-based picture of which pillars deserve year-1 investment.
-
-That is the foundation. Year 1 compounds it. Year 3 is the constitution's
-target. Phoenix earns each rung.

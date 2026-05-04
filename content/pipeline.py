@@ -6,6 +6,8 @@ Examples:
     python -m content.pipeline draft --template newsletter \\
         --topic "Why solopreneurs should ship one tool a quarter" \\
         --max-tokens 2500
+    python -m content.pipeline generate-thread "AI resilience for solopreneurs"
+    python -m content.pipeline generate-thread "AI resilience" --research
 """
 from __future__ import annotations
 
@@ -83,6 +85,86 @@ def cmd_draft(args) -> int:
     return 0
 
 
+def _draft_one(template: str, topic: str, *, research_context: str = "",
+               max_tokens: int = 2000) -> tuple[Path, dict]:
+    tpl_path = TEMPLATE_DIR / f"{template}.md"
+    if not tpl_path.exists():
+        raise FileNotFoundError(f"Unknown template: {template}")
+    body = tpl_path.read_text().replace("{topic}", topic)
+    user = body
+    if research_context:
+        user = (
+            "Background research brief (use as fact base; do not invent "
+            "numbers beyond what's here):\n\n"
+            f"{research_context}\n\n---\n\n{body}\n\nNow produce the artifact."
+        )
+    else:
+        user = body + "\n\nNow produce the artifact."
+    text, meta = llm_call(
+        system=SYSTEM, user=user, label=f"content/{template}",
+        max_tokens=max_tokens,
+    )
+    ensure_dirs()
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    out = ARTIFACTS_DIR / f"{ts}_{template}_{_slugify(topic)}.md"
+    header = (
+        f"<!-- phoenix artifact\n"
+        f"template: {template}\n"
+        f"topic: {topic}\n"
+        f"model: {meta['model']}\n"
+        f"input_tokens: {meta['input_tokens']}\n"
+        f"output_tokens: {meta['output_tokens']}\n"
+        f"estimated_usd: {meta['estimated_usd']:.6f}\n"
+        f"generated_at: {ts}\n"
+        f"research_seeded: {bool(research_context)}\n"
+        f"-->\n\n"
+    )
+    out.write_text(header + text)
+    return out, meta
+
+
+def cmd_generate_thread(args) -> int:
+    """Produce a thread AND a newsletter on the same topic, optionally seeded
+    with a fresh research brief. Outputs both file paths."""
+    research_context = ""
+    if args.research:
+        from research.agent import SYSTEM as RSYS
+        from phoenix_core.llm import call as _call
+        text, meta = _call(
+            system=RSYS,
+            user=(f"Topic to investigate: {args.topic}\n\n"
+                  "Operator profile: one human + Claude, modest capital. "
+                  "Produce the brief now."),
+            label="research/scan(seed)",
+            max_tokens=2200,
+        )
+        ensure_dirs()
+        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        rpath = ARTIFACTS_DIR / f"{ts}_research_{_slugify(args.topic)}.md"
+        rpath.write_text(
+            f"<!-- phoenix research seed\nmodel: {meta['model']}\n-->\n\n{text}"
+        )
+        research_context = text
+        print(f"Research seed -> {rpath} (~${meta['estimated_usd']:.4f})")
+
+    total_cost = 0.0
+    outputs = []
+    for template in ("thread", "newsletter"):
+        out, meta = _draft_one(
+            template, args.topic,
+            research_context=research_context,
+            max_tokens=args.max_tokens,
+        )
+        outputs.append(out)
+        total_cost += meta["estimated_usd"]
+        print(f"  {template:<10} -> {out}")
+
+    print(f"\nThread + newsletter ready. Total ~${total_cost:.4f}.")
+    print(f"Files:\n  - {outputs[0]}\n  - {outputs[1]}")
+    print("Review for voice, then publish.")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="content", description="Phoenix content pipeline")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -94,6 +176,16 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--topic", required=True)
     sp.add_argument("--max-tokens", type=int, default=2000)
     sp.set_defaults(func=cmd_draft)
+
+    sp = sub.add_parser(
+        "generate-thread",
+        help="Generate a thread + newsletter pair on one topic, optionally seeded by research.",
+    )
+    sp.add_argument("topic")
+    sp.add_argument("--research", action="store_true",
+                    help="First run the research agent and seed the drafts with its brief.")
+    sp.add_argument("--max-tokens", type=int, default=2200)
+    sp.set_defaults(func=cmd_generate_thread)
     return p
 
 

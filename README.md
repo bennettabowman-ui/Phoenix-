@@ -58,6 +58,13 @@ python -m research.agent scan "AI tools for solopreneurs"
 The ledger and portfolio tracker run with **no API key** — pure stdlib.
 The content and research tools require `ANTHROPIC_API_KEY`.
 
+Run the test suite:
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest tests/ -q
+```
+
 ## Roadmap
 
 The architecture defines five maturity rungs. We are at **Rung 1**.
